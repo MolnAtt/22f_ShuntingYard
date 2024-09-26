@@ -91,6 +91,7 @@ namespace _22f_LengyelForma
 					Nyitózárójelig_átpakol(operator_stack, output);
 					operator_stack.Pop(); // kidobjuk a nyitó zárójelet
 				}
+				Diagnosztika(output, operator_stack);
 			}
 			return output;
 		}
@@ -107,17 +108,25 @@ namespace _22f_LengyelForma
 				output.Push(operator_stack.Pop().ToString());
 		}
 
-		public static void Verem_kiirasa(Stack<string> verem)
+		public static void Diagnosztika(Stack<string> output, Stack<char> operator_stack)
 		{
-			foreach (var item in verem)
+			Console.Write("output = [ ");
+			foreach (string adat in output.Reverse())
 			{
-                Console.WriteLine(item);
-            }
-		}
+				Console.Write(adat + " ");
+			}
+			Console.WriteLine("]");
 
+			Console.Write("operator_stack = [ ");
+			foreach (char op in operator_stack.Reverse())
+			{
+				Console.Write(op + " ");
+			}
+			Console.WriteLine("]");
+            Console.WriteLine("--------------------------------------------");
+        }
 
-
-		private static bool Művelet(string adat) => "+-*/^".Contains(adat);
+		private static bool Művelet(string adat) => prioritás.ContainsKey(adat);
 
 		private static bool Szám(string adat) => int.TryParse(adat, out int result);
 
@@ -178,7 +187,7 @@ namespace _22f_LengyelForma
 			Console.WriteLine(Ha_nincs_körülötte_zárójel_akkor_rakunk_köré_egyet(input));
             
 			Stack<string> verem = TolatóUdvar(input); // ())(()
-			Verem_kiirasa(verem);
+
 
 			//Console.WriteLine(Beolvas("(2234*3342-3213+443)", 10));
         }
