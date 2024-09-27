@@ -76,17 +76,14 @@ namespace _22f_LengyelForma
 
 				if (Szám(adat))
 					output.Push(adat);
-
-				if (adat == "(")
+				else if (adat == "(")
 					operator_stack.Push(adat[0]);
-
-				if (Művelet(adat))
+				else if (Művelet(adat))
 				{
 					Alacsonyabb_precedenciájúig_vagy_nyitójelig_átpakol(operator_stack, output, adat);
 					operator_stack.Push(adat[0]);
 				}
-
-				if (adat == ")")
+				else if (adat == ")")
 				{
 					Nyitózárójelig_átpakol(operator_stack, output);
 					operator_stack.Pop(); // kidobjuk a nyitó zárójelet
@@ -104,7 +101,7 @@ namespace _22f_LengyelForma
 
 		private static void Alacsonyabb_precedenciájúig_vagy_nyitójelig_átpakol(Stack<char> operator_stack, Stack<string> output, string adat)
 		{
-			while (operator_stack.Count > 0 && operator_stack.Peek() != '(' && prioritás[adat] >= prioritás[operator_stack.Peek().ToString()] )
+			while (operator_stack.Count > 0 && operator_stack.Peek() != '(' && prioritás[adat] <= prioritás[operator_stack.Peek().ToString()] )
 				output.Push(operator_stack.Pop().ToString());
 		}
 
