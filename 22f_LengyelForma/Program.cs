@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32.SafeHandles;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -51,6 +52,48 @@ namespace _22f_LengyelForma
 			return stack.Peek();
         }
 
+
+		static int Kiszámol(Stack<string> input)
+		{
+			Stack<int> számolóverem = new Stack<int>();
+
+			foreach (string s in input.Reverse())
+			{
+				if (Szám(s))
+					számolóverem.Push(int.Parse(s));
+				else
+					switch (s)
+					{
+						case "+":
+							számolóverem.Push(számolóverem.Pop() + számolóverem.Pop());
+							break;
+						case "*":
+							számolóverem.Push(számolóverem.Pop() * számolóverem.Pop());
+							break;
+						case "-":
+							számolóverem.Push(számolóverem.Pop() - számolóverem.Pop());
+							break;
+						case "/":
+							számolóverem.Push(számolóverem.Pop() / számolóverem.Pop());
+							break;
+						case "%":
+							számolóverem.Push(számolóverem.Pop() % számolóverem.Pop());
+							break;
+						case "^":
+							számolóverem.Push((int)Math.Pow(számolóverem.Pop(), számolóverem.Pop()));
+							break;
+					}
+				// ronda kiírás:
+				Console.Write("[ ");
+				foreach (int item in számolóverem)
+				{
+					Console.Write(item);
+					Console.Write(" ");
+				}
+                Console.WriteLine(" ]");
+            }
+			return számolóverem.Peek();
+		}
 		static Dictionary<string, int> prioritás = new Dictionary<string, int>
 		{
 			 {"+", 1 },
@@ -59,8 +102,6 @@ namespace _22f_LengyelForma
 			 {"/", 2 },
 			 {"^", 3 },
 		};
-		
-
 		static Stack<string> TolatóUdvar(string vonat)
 		{
 			Stack<string> output = new Stack<string>();
@@ -92,19 +133,16 @@ namespace _22f_LengyelForma
 			}
 			return output;
 		}
-
 		private static void Nyitózárójelig_átpakol(Stack<char> operator_stack, Stack<string> output)
 		{
 			while (operator_stack.Peek() != '(')
 				output.Push(operator_stack.Pop().ToString());
 		}
-
 		private static void Alacsonyabb_precedenciájúig_vagy_nyitójelig_átpakol(Stack<char> operator_stack, Stack<string> output, string adat)
 		{
 			while (operator_stack.Count > 0 && operator_stack.Peek() != '(' && prioritás[adat] <= prioritás[operator_stack.Peek().ToString()] )
 				output.Push(operator_stack.Pop().ToString());
 		}
-
 		public static void Diagnosztika(Stack<string> output, Stack<char> operator_stack)
 		{
 			Console.Write("output = [ ");
@@ -122,11 +160,8 @@ namespace _22f_LengyelForma
 			Console.WriteLine("]");
             Console.WriteLine("--------------------------------------------");
         }
-
 		private static bool Művelet(string adat) => prioritás.ContainsKey(adat);
-
 		private static bool Szám(string adat) => int.TryParse(adat, out int result);
-
 		private static (string, int) Beolvas(string vonat, int honnan)
 		{
 			if (!Számjel(vonat[honnan]))
@@ -136,7 +171,6 @@ namespace _22f_LengyelForma
 				i++;
 			return (vonat.Substring(honnan, i - honnan), i);
 		}
-
 		private static bool Számjel(char v) => "0123456789".Contains(v);
 
 
@@ -179,14 +213,16 @@ namespace _22f_LengyelForma
 			//string lengyel = Console.ReadLine();
 			//Console.WriteLine(Kiszámol_lengyel_egyszámjegyes(lengyel));
 
-			string input = "3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3";
+			string input = "3 + 4 * 2 + ( 1 - 5 ) ^ 2 * 2";
 
-			Console.WriteLine(Ha_nincs_körülötte_zárójel_akkor_rakunk_köré_egyet(input));
-            
+			//Console.WriteLine(Ha_nincs_körülötte_zárójel_akkor_rakunk_köré_egyet(input));
+
 			Stack<string> verem = TolatóUdvar(input); // ())(()
+			
+            Console.WriteLine(verem.Count);
+            Console.WriteLine(Kiszámol(verem));
 
-
-			//Console.WriteLine(Beolvas("(2234*3342-3213+443)", 10));
+            //Console.WriteLine(Beolvas("(2234*3342-3213+443)", 10));
         }
 	}
 }
