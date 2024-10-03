@@ -1,9 +1,6 @@
-﻿using Microsoft.Win32.SafeHandles;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace _22f_LengyelForma
 {
@@ -82,6 +79,14 @@ namespace _22f_LengyelForma
 						case "^":
 							számolóverem.Push((int)Math.Pow(számolóverem.Pop(), számolóverem.Pop()));
 							break;
+						case "f":
+							int a = számolóverem.Pop();
+							int b = számolóverem.Pop();
+							int c = számolóverem.Pop();
+							if (c < a) (a, c) = (c, a);
+							Console.WriteLine($"{a} {b} {c}");
+							számolóverem.Push(Convert.ToInt32(a <= b && b <= c));
+							break;
 					}
 				// ronda kiírás:
 				Console.Write("[ ");
@@ -101,6 +106,11 @@ namespace _22f_LengyelForma
 			 {"*", 2 },
 			 {"/", 2 },
 			 {"^", 3 },
+			 {"f", 4 } // háromargumentumú függvény, f(a b c) = `b` a számegyenesen `a` és `c` között helyezkedik-e el
+		};
+		static HashSet<string> prefix_függvények = new HashSet<string>
+		{
+			"f"
 		};
 		static Stack<string> TolatóUdvar(string vonat)
 		{
@@ -128,12 +138,16 @@ namespace _22f_LengyelForma
 				{
 					Nyitózárójelig_átpakol(operator_stack, output);
 					operator_stack.Pop(); // kidobjuk a nyitó zárójelet
+					if (operator_stack.Count > 0 && prefix_függvények.Contains(operator_stack.Peek() + ""))
+					{
+						output.Push(operator_stack.Pop() + "");
+					}
 				}
 				Diagnosztika(output, operator_stack);
 			}
 			return output;
 		}
-		private static void Nyitózárójelig_átpakol(Stack<char> operator_stack, Stack<string> output)
+        private static void Nyitózárójelig_átpakol(Stack<char> operator_stack, Stack<string> output)
 		{
 			while (operator_stack.Peek() != '(')
 				output.Push(operator_stack.Pop().ToString());
@@ -213,7 +227,7 @@ namespace _22f_LengyelForma
 			//string lengyel = Console.ReadLine();
 			//Console.WriteLine(Kiszámol_lengyel_egyszámjegyes(lengyel));
 
-			string input = "3 + 4 * 2 + ( 1 - 5 ) ^ 2 * 2";
+			string input = "3 + 4 * 2 + ( 1 - 5 ) ^ 2 * 2 + f ( 3 4 5 ) * 4";
 
 			//Console.WriteLine(Ha_nincs_körülötte_zárójel_akkor_rakunk_köré_egyet(input));
 
@@ -222,7 +236,9 @@ namespace _22f_LengyelForma
             Console.WriteLine(verem.Count);
             Console.WriteLine(Kiszámol(verem));
 
-            //Console.WriteLine(Beolvas("(2234*3342-3213+443)", 10));
+			//Console.WriteLine(Beolvas("(2234*3342-3213+443)", 10));
+
+			Console.ReadKey();
         }
 	}
 }
